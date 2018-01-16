@@ -1,0 +1,239 @@
+package gui.view;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JColorChooser;
+import javax.swing.JFrame;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
+import javax.swing.plaf.ColorChooserUI;
+
+import akcije.ChangeColorAction;
+import akcije.PAndAction;
+import akcije.PLasoAction;
+import akcije.PLinkAction;
+import akcije.PMoveAction;
+import akcije.PNotAction;
+import akcije.POrAction;
+import akcije.PRedoAction;
+import akcije.PResizeAction;
+import akcije.PRotateLeftAction;
+import akcije.PSelectAction;
+import akcije.PUndoAction;
+import gekosem.AndElement;
+import gekosem.Gekosem;
+import gekosem.GraphicElement;
+import gekosem.GraphicShape;
+import gekosem.NotElement;
+import gekosem.OrElement;
+import gekosem.painter.AndPainter;
+import gekosem.painter.NotPainter;
+import gekosem.painter.OrPainter;
+import gui.commands.Invoker;
+import gui.constants.Constants;
+import gui.controller.PaletteController;
+import gui.model.Element;
+import gui.model.MainModel;
+import gui.model.Slot;
+import state.AndState;
+import state.NotState;
+import state.OrState;
+
+
+@SuppressWarnings("serial")
+public class PaletteView extends JToolBar {
+
+	public MainModel model;
+	private Slot slot;
+	
+	private JToggleButton select;
+	private JToggleButton move;
+	private JToggleButton cut;
+	private JToggleButton copy;
+	private JToggleButton paste;
+	private JToggleButton delete;
+	private JToggleButton lassoSelect;
+	private JToggleButton createANDGate;
+	private JToggleButton createORGate;
+	private JToggleButton createNOTGate;
+	private JToggleButton createLink;
+	private ButtonGroup buttonGroup;
+	private JButton undo;
+	private JButton redo;
+	private JButton rotateLeft;
+	private JButton rotateRight;
+	private JButton colorPicker;
+	private PaletteController paletteController;
+
+	
+	public PaletteView(Slot slot, Gekosem g) {
+
+		super(JToolBar.HORIZONTAL);
+		this.slot = slot;
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		buttonGroup = new ButtonGroup();
+		
+		select = new JToggleButton(new PSelectAction(slot));
+		paletteController = new PaletteController(g.getTransformToUserSpace(), g.getStateManager()); 
+		
+		select.setToolTipText("Select");
+		select.setIcon(new ImageIcon(Constants.SELECT_ICON));
+		select.addActionListener(paletteController.getChangeStatusBarListener(1));
+
+		move = new JToggleButton(new PMoveAction());
+		move.setToolTipText("Move");
+		move.setIcon(new ImageIcon("images/palette-icons/move.png"));
+		move.addActionListener(paletteController.getChangeStatusBarListener(2));
+
+		cut = new JToggleButton();
+		cut.setToolTipText("Cut");
+		cut.setIcon(new ImageIcon("images/palette-icons/cut.png"));
+		
+		copy = new JToggleButton();
+		copy.setToolTipText("Copy");
+		copy.setIcon(new ImageIcon("images/palette-icons/copy.png"));
+		
+		paste = new JToggleButton();
+		paste.setToolTipText("Paste");
+		paste.setIcon(new ImageIcon("images/palette-icons/paste.png"));
+		
+		delete = new JToggleButton();
+		delete.setToolTipText("Delete");
+		delete.setIcon(new ImageIcon(Constants.DELETE_ICON));
+		
+		lassoSelect = new JToggleButton(new PLasoAction());
+		lassoSelect.setToolTipText("Lasso select");
+		lassoSelect.setIcon(new ImageIcon(Constants.LASSO_SELECT_ICON));
+		lassoSelect.addActionListener(paletteController.getChangeStatusBarListener(3));
+
+		createANDGate = new JToggleButton(new PAndAction(slot));
+		createANDGate.setToolTipText("Create AND gate");
+		createANDGate.setIcon(new ImageIcon(Constants.AND_GATE_ICON));
+		createANDGate.addActionListener(paletteController.getChangeStatusBarListener(4));
+		
+		createORGate = new JToggleButton(new POrAction(slot));
+		createORGate.setToolTipText("Create OR gate");
+		createORGate.setIcon(new ImageIcon(Constants.OR_GATE_ICON));
+		createORGate.addActionListener(paletteController.getChangeStatusBarListener(5));
+
+		
+		createNOTGate = new JToggleButton(new PNotAction(slot));
+		createNOTGate.setToolTipText("Create NOT gate");
+		createNOTGate.setIcon(new ImageIcon(Constants.NOT_GATE_ICON));
+		createNOTGate.addActionListener(paletteController.getChangeStatusBarListener(6));
+
+		
+		createLink = new JToggleButton(new PLinkAction(slot));
+		createLink.setToolTipText("Create link between gates");
+		createLink.setIcon(new ImageIcon(Constants.LINK_ICON));
+		createLink.addActionListener(paletteController.getChangeStatusBarListener(7));
+
+		
+		undo = new JButton();
+		undo.setToolTipText("Undo");
+		undo.addActionListener(new PUndoAction(g));
+		undo.setEnabled(false);
+		undo.setIcon(new ImageIcon("images/palette-icons/undo.png"));
+		
+		redo = new JButton();
+		redo.setToolTipText("Redo");
+		redo.addActionListener(new PRedoAction(g));
+		redo.setEnabled(false);
+		redo.setIcon(new ImageIcon("images/palette-icons/redo.png"));
+		
+		rotateLeft = new JButton();
+		rotateLeft.setToolTipText("Rotate left");
+		rotateLeft.setIcon(new ImageIcon("images/palette-icons/rotateLeft.png"));
+		rotateLeft.addActionListener(new PRotateLeftAction(g, false));
+		
+		rotateRight = new JButton();
+		rotateRight.setToolTipText("Rotate right");
+		rotateRight.setIcon(new ImageIcon("images/palette-icons/rotateRight.png"));
+		rotateRight.addActionListener(new PRotateLeftAction(g, true));
+		
+		colorPicker = new JButton();
+		colorPicker.setToolTipText("Color chooser");
+		colorPicker.setEnabled(true);
+		colorPicker.setIcon(new ImageIcon("images/palette-icons/colorPicker.png"));
+		colorPicker.addActionListener(new ChangeColorAction(g));
+		
+		buttonGroup.add(select);
+		buttonGroup.add(move);
+		buttonGroup.add(cut);
+		buttonGroup.add(copy);
+		buttonGroup.add(paste);
+		buttonGroup.add(delete);
+		buttonGroup.add(lassoSelect);
+		buttonGroup.add(createANDGate);
+		buttonGroup.add(createORGate);
+		buttonGroup.add(createNOTGate);
+		buttonGroup.add(createLink);
+		buttonGroup.add(colorPicker);
+		
+		add(select);
+		add(move);
+		add(lassoSelect);
+		addSeparator();
+		add(createANDGate);
+		add(createORGate);
+		add(createNOTGate);
+		add(createLink);
+		addSeparator();
+		add(cut);
+		add(copy);
+		add(paste);
+		addSeparator();
+		add(undo);
+		add(redo);
+		addSeparator();
+		add(rotateLeft);
+		add(rotateRight);
+		add(colorPicker);
+		
+		setFloatable(false);
+	}
+	
+
+
+	public JToggleButton getSelect() {
+		return select;
+	}
+	
+	public JToggleButton getLassoSelect() {
+		return lassoSelect;
+	}
+
+	public JToggleButton getCreateANDGate() {
+		return createANDGate;
+	}
+
+	public JToggleButton getCreateORGate() {
+		return createORGate;
+	}
+
+	public JToggleButton getCreateNOTGate() {
+		return createNOTGate;
+	}
+
+	public ButtonGroup getButtonGroup() {
+		return buttonGroup;
+	}
+
+	public JButton getUndo() {
+		return undo;
+	}
+
+	public JButton getRedo() {
+		return redo;
+	}
+
+	
+}

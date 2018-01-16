@@ -1,0 +1,24 @@
+package gekosem.commands;
+
+import gui.model.Slot;
+
+public class ChangeColorCommand extends ElementCommand {
+
+	private Slot slot;
+	
+	public ChangeColorCommand(Slot slot) {
+		this.slot = slot;
+	}
+	@Override
+	public void doCommand() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void undoCommand() {
+		// TODO Auto-generated method stub
+
+	}
+
+}

@@ -1,0 +1,167 @@
+package gui.view;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.beans.PropertyVetoException;
+
+import javax.swing.JDesktopPane;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.tree.TreePath;
+
+import gui.constants.Constants;
+import gui.model.Document;
+import gui.model.MainModel;
+import gui.model.Project;
+import gui.model.Workspace;
+import gui.model.tree.Node;
+import gui.observer.MainObserver;
+import gui.observer.NotificationObserver;
+
+
+@SuppressWarnings("serial")
+public class DesktopView extends JDesktopPane implements MainObserver {
+
+	private Workspace workspace;
+	private MainModel model;
+
+	public DesktopView(MainModel model) {
+		this.model = model;
+		this.model.addObserver(this);
+		this.workspace = Workspace.getInstance();
+		this.workspace.addObserver(this);
+		this.setBackground(Color.LIGHT_GRAY);
+		setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+	}
+	
+	public void cascade() {
+		int size = getAllFrames().length;
+		
+		for (int i = 0 ; i < size; i++) {
+			getAllFrames()[i].setLocation(30 + i * 40, 30 + i * 40);
+			getAllFrames()[i].setSize(Constants.INTERNAL_FRAME_SIZE);
+			
+			try {
+				getAllFrames()[i].setSelected(true);
+			}
+			catch (PropertyVetoException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void tileVertically() {
+		Dimension d = getSize();
+		int size = getAllFrames().length;
+		int height = (int) (d.getHeight() / size);
+		
+		for (int i = 0; i < size; i++) {
+			getAllFrames()[i].setLocation(0, i * height);
+			getAllFrames()[i].setSize((int) d.getWidth(), height);
+		}
+	}
+	
+	public void tileHorizontally() {
+		Dimension d = getSize();
+		int size = getAllFrames().length;
+		int width = (int) (d.getWidth() / size);
+		
+		for (int i = 0; i < size; i++) {
+			getAllFrames()[i].setLocation(i * width, 0);
+			getAllFrames()[i].setSize(width, (int) d.getHeight());
+		}
+	}
+	
+	@Override
+	public void update(NotificationObserver notification, Object obj) {
+		if (notification == NotificationObserver.ADD) {
+			if (obj instanceof Project) {
+				Project project = (Project) obj;
+				addNewChildView(project);
+			}
+		}
+		else if (notification == NotificationObserver.DELETE) {
+			ProjectView projectView = findProjectView((Project) obj);
+			
+			try {
+				try {
+					projectView.setIcon(false);
+					remove(projectView);
+				}
+				catch (PropertyVetoException e) {
+					e.printStackTrace();
+				}
+				
+				repaint();
+			} 
+			catch (NullPointerException e) {
+				e.printStackTrace();
+			}
+		}
+		else if (notification == NotificationObserver.DESKTOP_SELECT) {
+			TreePath treePath = (TreePath) obj;
+			Object[] path = treePath.getPath();
+			updateSelection(path, 1);
+			
+			if (treePath.getLastPathComponent() instanceof Node)
+				model.doTreeSelection((Node) treePath.getLastPathComponent());
+		}
+	}
+	
+	public void addNewChildView(Project project) {
+		Point p = new Point(0 + getAllFrames().length * 10,
+							10 + getAllFrames().length * 10);
+		ProjectView projectView = new ProjectView(model, project, p);
+		this.add(projectView);
+		repaint();
+
+		try {
+			projectView.setSelected(true);
+		} 
+		catch (PropertyVetoException e) {
+			e.printStackTrace();
+		}
+		
+		for (Node child : project.getChildren()) {
+			Document document = (Document) child;
+			projectView.addNewChildView(document);
+		}
+	}
+	
+	public ProjectView findProjectView(Project project) {
+		for (JInternalFrame internalFrame : getAllFrames()) {
+			ProjectView projectView = (ProjectView) internalFrame;
+			
+			if (projectView.getProject() == project) 
+				return projectView;
+			
+		}
+		
+		return null;
+	}
+	
+	private void updateSelection(Object[] path, int idx) {
+		if (path.length > idx) {
+			ProjectView projectView = findProjectView((Project) path[idx]);
+			
+			if (projectView == null) 
+				return;
+			
+			try {
+				if (this.getSelectedFrame() != projectView) 
+					projectView.setSelected(true);
+				
+				projectView.updateSelection(path, idx + 1);
+			}
+			catch (NullPointerException e) {
+				e.printStackTrace();
+			}
+			catch (PropertyVetoException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	
+}

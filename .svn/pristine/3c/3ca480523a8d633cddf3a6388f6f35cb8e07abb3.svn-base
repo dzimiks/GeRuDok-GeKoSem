@@ -1,0 +1,78 @@
+package gekosem.actions;
+
+import java.awt.Color;
+import java.awt.Paint;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JColorChooser;
+
+import gekosem.AndElement;
+import gekosem.Gekosem;
+import gekosem.GraphicShape;
+import gekosem.NotElement;
+import gekosem.OrElement;
+import gekosem.commands.ChangeColorCommand;
+import gekosem.painter.AndPainter;
+import gekosem.painter.NotPainter;
+import gekosem.painter.OrPainter;
+import gui.model.Element;
+import state.AndState;
+import state.NotState;
+import state.OrState;
+
+public class ChangeColorAction implements ActionListener {
+
+	private Gekosem g;
+	private Color prevColor;
+	
+	public ChangeColorAction(Gekosem g) {
+		this.g = g;
+		this.prevColor = g.getColor();
+	}
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		
+		prevColor = g.getColor();
+		Color color = JColorChooser.showDialog(null, "Change Circuits Color",Color.WHITE);
+		g.setColor(color);
+		g.getStateManager().setColor(color);
+
+	        if(g.getStateManager().getCurrentState() instanceof AndState){
+	        	g.getStateManager().setAndState();
+	        }
+	        
+	        if(g.getStateManager().getCurrentState() instanceof OrState){
+	        	g.getStateManager().setOrState();
+	        }
+	        
+	        if(g.getStateManager().getCurrentState() instanceof NotState){
+	        	g.getStateManager().setNotState();
+	        }
+	        /*
+	        //Chenge selected elements
+	        g.getStateManager().setSelectState();
+	        
+	        for(Element selectedElement: g.getSlot().getSelectionModels().getSelectionList()){
+				if(((GraphicShape)selectedElement) instanceof AndElement){
+					((AndElement)((GraphicShape)selectedElement)).setPaint(color);
+					((AndElement)((GraphicShape)selectedElement)).setPainter(new AndPainter(((AndElement)selectedElement)));
+					g.getSlot().notifyObservers(null, g);
+				}
+				if(((GraphicShape)selectedElement) instanceof OrElement){
+					((OrElement)((GraphicShape)selectedElement)).setPaint(color);
+					((OrElement)((GraphicShape)selectedElement)).setPainter(new OrPainter(((OrElement)selectedElement)));
+					g.getSlot().notifyObservers(null, g);				}
+				if(((GraphicShape)selectedElement) instanceof NotElement){
+					((NotElement)((GraphicShape)selectedElement)).setPaint(color);
+					((NotElement)((GraphicShape)selectedElement)).setPainter(new NotPainter(((NotElement)selectedElement)));
+					g.getSlot().notifyObservers(null, g);				}
+			}*/
+	        
+	        // Za undo i redo
+	        g.getGkm().addCommad(new ChangeColorCommand(g.getSlot(), color, prevColor, g));
+	        g.getGkm().doCommand();
+	        
+	}
+
+}

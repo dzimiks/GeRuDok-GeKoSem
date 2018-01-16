@@ -1,0 +1,17 @@
+package akcije;
+
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+
+import gekosem.Gekosem;
+
+public class PMoveAction extends AbstractAction {
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		// TODO Auto-generated method stub
+		Gekosem.getStateManager().setMoveState();
+	}
+
+}

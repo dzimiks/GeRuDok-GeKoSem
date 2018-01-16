@@ -1,0 +1,75 @@
+package gui.commands;
+
+import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
+
+import gekosem.GraphicShape;
+import gekosem.LinkElement;
+import gui.model.Element;
+import gui.model.MainModel;
+import gui.model.Project;
+import gui.model.Workspace;
+import gui.model.tree.Node;
+
+/**
+ * Komanda koja brise cvor i osvezava stablo.
+ * 
+ * @author Vanja Paunovic
+ *
+ */
+public class DeleteNodeCommand extends Command {
+
+	private Node node;
+	
+	public DeleteNodeCommand(MainModel model, Node node) {
+		this.model = model;
+		this.node = node;
+	}
+	
+	@Override
+	public void doCommand() {
+		
+		if(node == null) return;
+		
+		JOptionPane jOptionPane = new JOptionPane();
+		
+		if(node instanceof Workspace){
+			jOptionPane.showMessageDialog(null, "You cannot delete workspace.");
+			return;
+		}
+		
+		int answer = jOptionPane.showConfirmDialog(null, "Are you sure you want to delete "+ node.getName() +"?");
+		
+		if(answer == JOptionPane.YES_OPTION){
+			
+			Node parent = (Node) node.getParent();
+			
+			if (node instanceof Project) {
+				for (Node child : node.getChildren()) {
+					this.model.getFreeDocuments().add(child);
+					this.model.doReloadFreeDocuments();
+				}
+			}
+			if(node instanceof GraphicShape){
+	
+				ArrayList<Element> linkoviZaBrisanje = new ArrayList<>();
+				for(Node n : parent.getChildren()){
+					if(n instanceof LinkElement && (((LinkElement)n).getStart().equals(node)
+							|| ((LinkElement)n).getEnd().equals(node))){
+						//Da se pozove delete comanda za n
+						linkoviZaBrisanje.add((Element)n);
+					}
+					
+				} 
+
+					Invoker.getInstance().executeCommand(new DeleteElementCommand(linkoviZaBrisanje));
+	
+			}
+			
+			node.removeFromParent();
+			model.getTreeModel().reload();
+			Invoker.getInstance().executeCommand(new TreeSelectCommand(model, parent));
+		}
+	}
+}

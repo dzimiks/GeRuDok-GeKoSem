@@ -1,0 +1,84 @@
+package gui.listeners;
+
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.SwingUtilities;
+
+import gekosem.Gekosem;
+import gui.commands.AddGraphicElementCommand;
+import gui.commands.Invoker;
+import gui.commands.TreeSelectCommand;
+import gui.model.ElementType;
+import gui.model.MainModel;
+import gui.model.Slot;
+import textEditor.EditorView;
+
+public class DoubleClickListener implements MouseListener{
+	
+	private MainModel model;
+	
+	public DoubleClickListener(MainModel model) {
+		this.model = model;
+	}
+	
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		if(e.getClickCount() >= 3 && SwingUtilities.isRightMouseButton(e)){
+			try {
+				Slot node = (Slot) model.getSelectedObject();
+				ElementType currentSlotType = node instanceof Slot ? ((Slot) node).getType() : null;
+				Gekosem graphicEditor;
+				EditorView textEditor;
+				
+				if (currentSlotType == null) {
+					model.getTreeModel().reload();
+				}
+				else if (currentSlotType.equals(ElementType.GRAPHIC)) {
+					graphicEditor = new Gekosem(node);
+					graphicEditor.setVisible(true);
+					model.getTreeModel().reload();
+					Invoker.getInstance().executeCommand(new TreeSelectCommand(model, node));
+				}
+				else if (currentSlotType.equals(ElementType.TEXT)) {
+					textEditor = new EditorView(node);
+					textEditor.setVisible(true);
+					model.getTreeModel().reload();
+					Invoker.getInstance().executeCommand(new TreeSelectCommand(model, node));
+				}
+			}
+			catch (ClassCastException ex1) {
+				ex1.printStackTrace();
+			}
+			catch (NullPointerException ex2) {
+				ex2.printStackTrace();
+			}
+		}
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+}

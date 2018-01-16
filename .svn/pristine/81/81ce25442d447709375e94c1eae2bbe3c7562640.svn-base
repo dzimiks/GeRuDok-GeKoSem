@@ -1,0 +1,166 @@
+package gekosem.commands;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+
+import gui.commands.Invoker;
+import gui.view.PaletteView;
+
+public class GekosemCommandMannager {
+
+	private PaletteView p;
+	
+	private ArrayList<ElementCommand> commands = new ArrayList<>();
+	
+	private int currentCommand = 0;
+	
+	
+	
+	public GekosemCommandMannager(PaletteView p) {
+		super();
+		this.p = p;
+	}
+
+
+	public void addCommad(ElementCommand command){
+		while(currentCommand < commands.size()){
+			commands.remove(currentCommand);
+		}
+		commands.add(command);
+		doCommand();
+	}
+	
+	
+	public void doCommand(){
+		if(currentCommand < commands.size()){
+			commands.get(currentCommand++).doCommand();
+			//undo
+			p.getUndo().setEnabled(true);
+		}
+		if(currentCommand==commands.size()){
+			//redo
+			p.getRedo().setEnabled(false);
+		}
+	}
+	
+	public void undoCommand(){
+		if(currentCommand > 0){
+			//redo
+			p.getRedo().setEnabled(true);
+			commands.get(--currentCommand).undoCommand();
+		}
+		if(currentCommand==0){
+			//undo
+			p.getRedo().setEnabled(false);
+		}
+	}
+	
+	/*private static GekosemCommandMannager instance = null;
+	private Deque<ElementCommand> history = new ArrayDeque<>();
+	private Deque<ElementCommand> redoStack = new ArrayDeque<>();
+	private List<UndoRedoListener> listeners = new ArrayList<>();
+	private ElementCommand lastBeforeSessionStart = null;
+	private boolean lastUndoEnabledState = false;
+	private boolean lastRedoEnabledState = false;
+	
+	private GekosemCommandMannager() {
+		super();
+	}
+	
+	public static GekosemCommandMannager getInstance() {
+		if(instance == null) {
+			instance = new GekosemCommandMannager();
+		}
+		
+		return instance;
+	}
+	
+	public void executeCommand(ElementCommand command){
+		command.doCommand();
+		makeSpace();
+		history.addLast(command);
+		redoStack.clear();
+		notifyListenersIfStatusChanged();
+	}
+	
+	private void makeSpace() {
+		if (history.size() >= 50)
+			history.removeFirst();
+	}
+	
+	public void addUndoRedoListener(UndoRedoListener listener) {
+		listeners.add(listener);
+	}
+	
+	public void removeUndoRedoListener(UndoRedoListener listener) {
+		listeners.remove(listener);
+	}
+	
+	public boolean canUndo() {
+		return history.size() > 0;
+	}
+	
+	public boolean canRedo() {
+		return redoStack.size() > 0;
+	}
+	
+	public void startSession() {
+		lastBeforeSessionStart = history.isEmpty() ? null : history.getLast();
+	}
+	
+	public void abortSession() {
+		if (lastBeforeSessionStart != null) {
+			while (!history.isEmpty() && history.getLast() != lastBeforeSessionStart)
+				history.removeLast();
+			
+			lastBeforeSessionStart = null;
+		}
+		
+		redoStack.clear();
+	}
+	
+	private void notifyListenersIfStatusChanged() {
+		boolean undo = canUndo();
+		boolean redo = canRedo();
+		
+		if (lastUndoEnabledState != undo) 
+			for (UndoRedoListener l : listeners)
+				l.undoStatusChanged(undo);
+		
+		if (lastRedoEnabledState != redo)
+			for (UndoRedoListener l : listeners)
+				l.redoStatusChanged(redo);
+		
+		lastUndoEnabledState = undo;
+		lastRedoEnabledState = redo;
+	}
+	
+	public void undoCommand() throws Exception {
+		if (canUndo()) {
+			while (canUndo() && !history.getLast().isUndoable())
+				history.removeLast();
+			
+			ElementCommand elem = history.removeLast();
+			elem.undoCommand();
+			redoStack.addLast(elem);
+		}
+		
+		notifyListenersIfStatusChanged();
+	}
+	
+	public void redoCommand() {
+		if (canRedo()) {
+			while (canRedo() && !redoStack.getLast().isRedoable()) 
+				redoStack.removeLast();
+			
+			ElementCommand elem = redoStack.removeLast();
+			makeSpace();
+			history.addLast(elem);
+			elem.doCommand();
+		}
+		
+		notifyListenersIfStatusChanged();
+	}*/
+}

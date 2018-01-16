@@ -1,0 +1,272 @@
+package gui.view;
+
+import java.awt.Cursor;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.ImageIcon;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
+
+import gui.constants.Constants;
+import gui.controller.MenuBarController;
+import gui.model.MainModel;
+
+
+public class MenuBarView extends JMenuBar {
+	
+	/**
+	 * VersionUID za serijalizaciju.
+	 */
+	private static final long serialVersionUID = 1;
+	
+	public MenuBarController menuBarController;
+	public MainModel model;
+
+	public MenuBarView(MainModel model) {
+		
+		this.model = model;
+		menuBarController = new MenuBarController(model, this);
+		
+		JMenu file = new JMenu("File");
+		JMenuItem newWorkspace = new JMenuItem("New workspace");
+		JMenuItem switchWorkspace = new JMenuItem("Switch workspace");
+		JMenuItem openProject = new JMenuItem("Open project");
+		JMenuItem addNode = new JMenuItem("Add");
+		JMenuItem saveWorkspace = new JMenuItem("Save workspace");
+		JMenuItem saveProject = new JMenuItem("Save project");
+		JMenuItem closeProject = new JMenuItem("Close project");
+		JMenuItem closeAll = new JMenuItem("Close all");
+		JMenuItem shareDocument = new JMenuItem("Share document");
+		JMenuItem loadProject = new JMenuItem("Load project");
+		JMenuItem saveProjectAs = new JMenuItem("Save project As");
+		
+		// Podesavanja za otvaranje workspace-a
+		newWorkspace.setIcon(new ImageIcon("images/menu-icons/workspace.png"));
+		newWorkspace.setMnemonic(KeyEvent.VK_O);
+		newWorkspace.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		newWorkspace.addActionListener(menuBarController.getNewWorkspaceActionListener());
+		
+		// Podesavanja za promenu workspace-a
+		switchWorkspace.setIcon(new ImageIcon(Constants.SWITCH_WORKSPACE));
+		switchWorkspace.setMnemonic(KeyEvent.VK_W);
+		switchWorkspace.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
+		switchWorkspace.addActionListener(menuBarController.getSwitchWorkspaceListener());
+		
+		// Podesavanja za otvaranje projekta
+		openProject.setIcon(new ImageIcon(Constants.OPEN_PROJECT));
+		openProject.setMnemonic(KeyEvent.VK_O);
+		openProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK + ActionEvent.ALT_MASK));
+		openProject.addActionListener(menuBarController.getOpenProjectActionListener());
+		
+		// Podesavanja za dodavanje novog cvora
+		addNode.setIcon(new ImageIcon(Constants.ADD_ICON));
+		addNode.setMnemonic(KeyEvent.VK_N);
+		addNode.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+		addNode.addActionListener(menuBarController.getAddChildListener());
+		addNode.setEnabled(true);
+
+		// Podesavanja za cuvanje workspace-a
+		saveWorkspace.setIcon(new ImageIcon(Constants.SAVE_WORKSPACE));
+		saveWorkspace.setMnemonic(KeyEvent.VK_S);
+		saveWorkspace.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+		saveWorkspace.addActionListener(menuBarController.getSaveWorkspaceListener());
+		
+		// Podesavanja za cuvanje projekta
+		saveProject.setIcon(new ImageIcon(Constants.SAVE_PROJECT));
+		saveProject.setMnemonic(KeyEvent.VK_S);
+		saveProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.ALT_MASK));
+		saveProject.addActionListener(menuBarController.getSaveProjectActionListener());
+		
+		// Podesavanja za zatvaranje projekta
+		closeProject.setIcon(new ImageIcon(Constants.CLOSE_PROJECT));
+		closeProject.setMnemonic(KeyEvent.VK_C);
+		closeProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK + ActionEvent.ALT_MASK));
+		closeProject.addActionListener(menuBarController.getCloseProjectActionListener());
+		
+		// Podesavanja za zatvaranje svih aktivnih prozora
+		closeAll.setIcon(new ImageIcon(Constants.CLOSE_ALL_ICON));
+		closeAll.setMnemonic(KeyEvent.VK_C);
+		closeAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
+		closeAll.addActionListener(menuBarController.getCloseAllListener());
+		
+		// Podesavanja za serovanje dokumenata
+		shareDocument.setIcon(new ImageIcon(Constants.SHARE_DOCUMENT));
+		shareDocument.setMnemonic(KeyEvent.VK_S);
+		shareDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
+		shareDocument.addActionListener(menuBarController.getShareDocumentListener());
+		
+		// Podesavanja za ucitavanje projekta
+		loadProject.setIcon(new ImageIcon(Constants.LOAD_PROJECT_ICON));
+		loadProject.setMnemonic(KeyEvent.VK_L);
+		loadProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.CTRL_MASK));
+		loadProject.addActionListener(menuBarController.getLoadProjectActionListener());
+		
+		saveProjectAs.setIcon(new ImageIcon(Constants.SAVE_PROJECT));
+		saveProjectAs.setMnemonic(KeyEvent.VK_S);
+		saveProjectAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
+		saveProjectAs.addActionListener(menuBarController.getSaveProjectAsActionListener());
+		
+		
+		file.setMnemonic(KeyEvent.VK_F);
+		file.add(newWorkspace);
+		file.add(switchWorkspace);
+		file.add(loadProject);
+		file.addSeparator();
+		file.add(addNode);
+		file.addSeparator();
+		file.add(saveWorkspace);
+		file.add(saveProject);
+		file.add(saveProjectAs);
+		file.addSeparator();
+		file.add(openProject);
+		file.add(closeProject);
+		file.add(closeAll);
+		file.add(shareDocument);
+		
+		
+		JMenu edit = new JMenu("Edit");
+		JMenuItem renameNode = new JMenuItem("Rename");
+		JMenuItem deleteNode = new JMenuItem("Delete");
+		/*JMenuItem undo = new JMenuItem("Undo");
+		JMenuItem redo = new JMenuItem("Redo");
+		JMenuItem cut = new JMenuItem("Cut");
+		JMenuItem copy = new JMenuItem("Copy");
+		JMenuItem paste = new JMenuItem("Paste");
+		JMenuItem rotateLeft = new JMenuItem("Rotate left");
+		JMenuItem rotateRight = new JMenuItem("Rotate right");*/
+		
+		// Podesavanja za preimenovanje cvora
+		renameNode.setIcon(new ImageIcon(Constants.RENAME_ICON));
+		renameNode.setMnemonic(KeyEvent.VK_R);
+		renameNode.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK));
+		renameNode.addActionListener(menuBarController.getRenameActionListener());
+		
+		// Podesavanja za brisanje cvora
+		deleteNode.setIcon(new ImageIcon(Constants.DELETE_ICON));
+		deleteNode.setMnemonic(KeyEvent.VK_D);
+		deleteNode.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
+		deleteNode.addActionListener(menuBarController.getDeleteActionListener());
+		
+		// Podesavanja za akciju undo
+	/*	undo.setIcon(new ImageIcon(Constants.UNDO_ICON));
+		undo.setMnemonic(KeyEvent.VK_Z);
+		undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+		
+		// Podesavanja za akciju undo
+		redo.setIcon(new ImageIcon(Constants.REDO_ICON));
+		redo.setMnemonic(KeyEvent.VK_Z);
+		redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
+		
+		// Podesavanja za akciju cut
+		cut.setIcon(new ImageIcon(Constants.CUT_ICON));
+		cut.setMnemonic(KeyEvent.VK_X);
+		cut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+		
+		// Podesavanja za akciju copy
+		copy.setIcon(new ImageIcon(Constants.COPY_ICON));
+		copy.setMnemonic(KeyEvent.VK_C);
+		copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+		
+		// Podesavanja za akciju paste
+		paste.setIcon(new ImageIcon(Constants.PASTE_ICON));
+		paste.setMnemonic(KeyEvent.VK_P);
+		paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK));
+		
+		// Podesavanja za akciju paste
+		rotateLeft.setIcon(new ImageIcon(Constants.ROTATE_LEFT_ICON));
+		rotateLeft.setMnemonic(KeyEvent.VK_L);
+		rotateLeft.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
+		
+		// Podesavanja za akciju paste
+		rotateRight.setIcon(new ImageIcon(Constants.ROTATE_RIGHT_ICON));
+		rotateRight.setMnemonic(KeyEvent.VK_R);
+		rotateRight.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));*/
+		
+		edit.setMnemonic(KeyEvent.VK_E);
+		edit.add(renameNode);
+		edit.add(deleteNode);
+//		edit.addSeparator();
+		/*edit.add(undo);
+		edit.add(redo);
+		edit.addSeparator();
+		edit.add(cut);
+		edit.add(copy);
+		edit.add(paste);
+		edit.addSeparator();
+		edit.add(rotateLeft);
+		edit.add(rotateRight);*/
+		
+		JMenu window = new JMenu("Window");
+		/*JMenuItem zoomIn = new JMenuItem("Zoom in");
+		JMenuItem zoomOut = new JMenuItem("Zoom out");
+		JMenuItem bestFitZoom = new JMenuItem("Best fit zoom");*/
+		JMenuItem cascadeView = new JMenuItem("Cascade view");
+		JMenuItem tileHorizontally = new JMenuItem("Tile horizontally");
+		JMenuItem tileVertically = new JMenuItem("Tile vertically");
+		
+		/*
+		// Podesavanja za akciju zoom in
+		zoomIn.setIcon(new ImageIcon(Constants.ZOOM_IN_ICON));
+		zoomIn.setMnemonic(KeyEvent.VK_PLUS);
+		zoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
+		
+		// Podesavanja za akciju zoom out
+		zoomOut.setIcon(new ImageIcon(Constants.ZOOM_OUT_ICON));
+		zoomOut.setMnemonic(KeyEvent.VK_MINUS);
+		zoomOut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, ActionEvent.CTRL_MASK));
+		
+		// Podesavanja za akciju best fit zoom
+		bestFitZoom.setIcon(new ImageIcon(Constants.BEST_FIT_ZOOM_ICON));
+		bestFitZoom.setMnemonic(KeyEvent.VK_MINUS);
+		bestFitZoom.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
+		*/
+		
+		// Podesavanja za akciju cascade
+		cascadeView.setIcon(new ImageIcon(Constants.CASCADE_ICON));
+		cascadeView.setMnemonic(KeyEvent.VK_C);
+		cascadeView.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.ALT_MASK));
+		cascadeView.addActionListener(menuBarController.getCascadeActionListener());
+		
+		// Podesavanja za akciju tile horizontally
+		tileHorizontally.setIcon(new ImageIcon(Constants.TILE_HORIZONTALLY_ICON));
+		tileHorizontally.setMnemonic(KeyEvent.VK_H);
+		tileHorizontally.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.ALT_MASK));
+		tileHorizontally.addActionListener(menuBarController.getTileHorizontallyActionListener());
+		
+		// Podesavanja za akciju tile vertically
+		tileVertically.setIcon(new ImageIcon(Constants.TILE_VERTICALLY_ICON));
+		tileVertically.setMnemonic(KeyEvent.VK_V);
+		tileVertically.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.ALT_MASK));
+		tileVertically.addActionListener(menuBarController.getTileVerticallyActionListener());
+		
+		window.setMnemonic(KeyEvent.VK_W);
+		/*window.add(zoomIn);
+		window.add(zoomOut);
+		window.add(bestFitZoom);
+		window.addSeparator();*/
+		window.add(cascadeView);
+		window.add(tileHorizontally);
+		window.add(tileVertically);
+		
+		JMenu help = new JMenu("Help");
+		JMenuItem about = new JMenuItem("About");
+		
+		// Podesavanja za sekciju o timu
+		about.setIcon(new ImageIcon(Constants.ABOUT_ICON));
+		about.setMnemonic(KeyEvent.VK_A);
+		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.ALT_MASK));
+		about.addActionListener(menuBarController.getAboutActionListener());
+		about.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+		help.setMnemonic(KeyEvent.VK_H);
+		help.add(about);
+		
+		add(file);
+		add(edit);
+		add(window);
+		add(help);
+	}
+}

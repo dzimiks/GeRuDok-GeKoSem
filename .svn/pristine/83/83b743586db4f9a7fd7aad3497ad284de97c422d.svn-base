@@ -1,0 +1,16 @@
+package gui;
+
+import gekosem.Gekosem;
+import gui.model.Slot;
+import gui.view.MainView;
+import textEditor.EditorView;
+
+public class Main {
+
+	public static void main(String[] args) {
+		MainView view = MainView.getInstance();
+//		Gekosem view = new Gekosem(new Slot("slot"));
+//		EditorView view = new EditorView();
+		view.setVisible(true);
+	}
+}

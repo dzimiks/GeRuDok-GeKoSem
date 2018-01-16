@@ -1,0 +1,143 @@
+package gui.view;
+
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+
+import gekosem.Gekosem;
+import gekosem.GraphicElement;
+import gekosem.painter.ElementPainter;
+import gui.controller.SlotViewControler;
+import gui.listeners.DoubleClickListener;
+import gui.model.Element;
+import gui.model.ElementType;
+import gui.model.MainModel;
+import gui.model.Slot;
+import gui.model.tree.Node;
+import gui.observer.MainObserver;
+import gui.observer.NotificationObserver;
+import textEditor.TextElement;
+
+@SuppressWarnings("serial")
+public class SlotView extends JPanel implements MainObserver {
+
+	private MainModel model;
+	private TitledBorder titleBorder;
+	private Slot slot;
+	//protected ArrayList<MouseListener> deferredListeners = new ArrayList<>();
+	private DoubleClickListener doubleClickListener;
+
+	public SlotView(MainModel model, Slot slot) {
+		// super(model, slot, true);
+		this.slot = slot;
+		this.slot.addObserver(this);
+		this.model = model;
+		this.model.addObserver(this);
+		this.setSlot(slot);
+
+		setAlignmentY(CENTER_ALIGNMENT);
+		setAlignmentX(CENTER_ALIGNMENT);
+		this.setBackground(Color.YELLOW);
+		EmptyBorder innerBorder = new EmptyBorder(3, 3, 3, 3);
+		titleBorder = BorderFactory.createTitledBorder(innerBorder, slot.getName());
+		this.setBorder(titleBorder);
+		setSize(new Dimension(400, 400));
+		new SlotViewControler(model, this);
+		this.addMouseListener(doubleClickListener);
+
+	}
+
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+
+		if (slot.getType() != null) {
+
+			if (slot.getType().equals(ElementType.GRAPHIC)) {
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.8f));
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+				for (Node n : slot.getChildren()) {
+
+					GraphicElement p = (GraphicElement) n;
+
+					ElementPainter paint = (ElementPainter) p.getPainter();
+
+					paint.paint(g2, p);
+
+				}
+
+				Gekosem.paintSelectionHandles(g2, slot);
+				g2.setStroke(new BasicStroke((float) 1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, 1f,
+						new float[] { (float) 3, (float) 6 }, 0));
+				g2.draw(Gekosem.getSelectionRectangle());
+
+			} else if (slot.getType().equals(ElementType.TEXT)) {
+				if (slot.isLeaf()) {
+
+				} else {
+					TextElement textElement = (TextElement) slot.getChildAt(0);
+					if (textElement.isFontBold()) {
+						if (textElement.isFontItalic()) {
+							g.setFont(new Font(textElement.getFontStyle(), Font.BOLD + Font.ITALIC,
+									textElement.getFontSize()));
+						} else {
+							g.setFont(new Font(textElement.getFontStyle(), Font.BOLD, textElement.getFontSize()));
+						}
+					} else if (textElement.isFontItalic()) {
+						g.setFont(new Font(textElement.getFontStyle(), Font.ITALIC, textElement.getFontSize()));
+					} else {
+						g.setFont(new Font(textElement.getFontStyle(), Font.PLAIN, textElement.getFontSize()));
+					}
+					g.setColor(textElement.getColor());
+					String arr[] = textElement.getText().split("\n");
+					if (arr.length > 1) {
+						for (String line : textElement.getText().split("\n")) {
+							g.drawString(line, textElement.getY(), textElement.getX());
+							textElement.setX(textElement.getX() + textElement.getFontSize() + 7);
+						}
+						textElement.setX(20);
+					} else {
+						g.drawString(textElement.getText(), textElement.getX(), textElement.getY());
+					}
+
+				}
+			}
+		}
+	}
+
+	public Slot getSlot() {
+		return slot;
+	}
+
+	public void setSlot(Slot slot) {
+		this.slot = slot;
+	}
+
+	@Override
+	public void update(NotificationObserver notification, Object obj) {
+		repaint();
+		EmptyBorder innerBorder = new EmptyBorder(3, 3, 3, 3);
+		titleBorder = BorderFactory.createTitledBorder(innerBorder, slot.getName());
+		this.setBorder(titleBorder);
+
+	}
+	
+	public void setDoubleClickListener(DoubleClickListener listener) {
+		this.doubleClickListener = listener;
+	}
+
+}

@@ -1,0 +1,90 @@
+package gui.view.tree.dialogs;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+
+import gui.listeners.RenameDialogCancelListener;
+import gui.listeners.RenameOkListener;
+import gui.model.Element;
+import gui.model.MainModel;
+import gui.view.MainView;
+
+public class RenameDialog extends JDialog{
+	
+	private MainModel model;
+	private JLabel name;
+	private JTextField tfName;
+	private JButton btnOk;
+	private Element element;
+	
+	public RenameDialog(MainModel model, Element element) {
+		super();
+		this.model = model;
+		this.element = element;
+		
+		setLayout(null);
+		setResizable(false);
+		setTitle("Change element name");
+		setSize(400, 170);
+		setLocationRelativeTo(MainView.getInstance());
+		
+		initialize();
+	}
+	
+public void initialize() {
+		
+		name = new JLabel("Change element name");
+		tfName = new JTextField(element.getName());
+		
+		
+		name.setBounds(10, 10, 150, 25);
+		tfName.setBounds(180, 10, 190, 25);
+		
+		JButton btnOk = new JButton("OK");
+		JButton btnCancel = new JButton("Cancel");
+		
+		btnOk.setBounds(135, 100, 50, 25);
+		btnCancel.setBounds(195, 100, 80, 25);
+		
+		btnOk.addActionListener(new RenameOkListener(this));
+		
+		btnCancel.addActionListener(new RenameDialogCancelListener(this));
+		
+		add(name);
+		add(tfName);
+		add(btnOk);
+		add(btnCancel);
+	}
+
+	public Element getElement() {
+	return element;
+}
+
+public void setElement(Element element) {
+	this.element = element;
+}
+
+public void setTfName(JTextField tfName) {
+	this.tfName = tfName;
+}
+
+	public String getName() {
+		return name.getText();
+	}
+
+	public void setName(String name) {
+		this.name.setText(name);
+	}
+
+	public String getTfName() {
+		return tfName.getText();
+	}
+
+	public void setTfName(String tfName) {
+		this.tfName.setText(tfName);
+	}
+
+
+}

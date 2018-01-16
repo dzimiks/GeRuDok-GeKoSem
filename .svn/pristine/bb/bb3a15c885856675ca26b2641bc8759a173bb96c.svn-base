@@ -1,0 +1,259 @@
+package gui.view.tree;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.swing.ImageIcon;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.KeyStroke;
+
+import gui.constants.Constants;
+import gui.controller.tree.TreePopupMenuController;
+import gui.model.MainModel;
+import gui.model.Document;
+import gui.model.DocumentLink;
+import gui.model.Element;
+import gui.model.ElementType;
+import gui.model.Page;
+import gui.model.Project;
+import gui.model.Slot;
+import gui.model.Workspace;
+import gui.model.tree.Node;
+
+/**
+ * PopupMenu koji sadrzi dogadjaje koji ce biti primenjeni na cvorove.
+ * 
+ * @author Vanja Paunovic
+ *
+ */
+public class TreePopupMenu extends JPopupMenu {
+
+	/**
+	 * VersionUID za serijalizaciju.
+	 */
+	private static final long serialVersionUID = 1;
+	private MainModel model;
+	public TreePopupMenuController pmController;
+	private Node node;
+	private JMenu addElement;
+	private JMenuItem add;
+	private JMenuItem delete;
+	private JMenuItem rename;
+	private JMenuItem openOrClose;
+	private JMenuItem shareDocument;
+	private JMenuItem saveProject;
+	private JMenuItem saveWorkspace;
+	private JMenuItem edit;
+	private JMenuItem addTextElement;
+	private JMenuItem addGraphicElement;
+	private JMenuItem switchWorkspace;
+	private JMenuItem addFromFree;
+	private JMenuItem loadProject;
+	
+	private HashMap<Class<? extends Object>, List<JMenuItem>> menuItems;
+	
+	public TreePopupMenu(MainModel model, Node node) {
+		super();
+		this.model = model;
+		this.node = node;
+		
+		this.initialize();
+		this.pmController = new TreePopupMenuController(this.model, this);
+	}
+	
+	private void initialize() {
+		
+		// Add
+		this.add = new JMenuItem("Add");
+		this.add.setIcon(new ImageIcon(Constants.ADD_ICON));
+		this.add.setMnemonic(KeyEvent.VK_N);
+		this.add.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+		
+		// Delete
+		this.delete = new JMenuItem("Delete");
+		this.delete.setIcon(new ImageIcon(Constants.DELETE_ICON));
+		this.delete.setMnemonic(KeyEvent.VK_D);
+		this.delete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
+		
+		// Rename
+		this.rename = new JMenuItem("Rename");
+		this.rename.setIcon(new ImageIcon(Constants.RENAME_ICON));
+		this.rename.setMnemonic(KeyEvent.VK_R);
+		this.rename.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK));
+
+		// Open or close project
+		this.openOrClose = new JMenuItem(this.node instanceof Project && ((Project) this.node).isOpened() ? "Close" : "Open");
+		this.openOrClose.setIcon(new ImageIcon(this.node instanceof Project && ((Project) this.node).isOpened() ? 
+						Constants.CLOSE_PROJECT : Constants.OPEN_PROJECT));
+		this.openOrClose.setMnemonic(KeyEvent.VK_O);
+		this.openOrClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK + ActionEvent.ALT_MASK));
+		
+		// Share document
+		this.shareDocument = new JMenuItem("Share...");
+		this.shareDocument.setIcon(new ImageIcon(Constants.SHARE_DOCUMENT));
+		this.shareDocument.setMnemonic(KeyEvent.VK_S);
+		this.shareDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
+		
+		// Save project
+		this.saveProject = new JMenuItem("Save");
+		this.saveProject.setIcon(new ImageIcon(Constants.SAVE_PROJECT));
+		this.saveProject.setMnemonic(KeyEvent.VK_S);
+		this.saveProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.ALT_MASK));
+		
+		// Add text editor
+		this.addTextElement = new JMenuItem("Text element");
+		this.addTextElement.setIcon(new ImageIcon(Constants.TEXT_EDITOR_ICON));
+		
+		// Add graphic editor
+		this.addGraphicElement = new JMenuItem("Graphic element");
+		this.addGraphicElement.setIcon(new ImageIcon(Constants.GRAPHICS_EDITOR_ICON));
+		
+		// Add element menu
+		this.addElement = new JMenu("Add element");
+		this.addElement.setIcon(new ImageIcon(Constants.ADD_ICON));
+		this.addElement.add(addTextElement);
+		this.addElement.add(addGraphicElement);
+		
+		// Switch workspace
+		this.switchWorkspace = new JMenuItem("Switch workspace");
+		this.switchWorkspace.setIcon(new ImageIcon(Constants.SWITCH_WORKSPACE));
+		this.switchWorkspace.setMnemonic(KeyEvent.VK_W);
+		this.switchWorkspace.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
+
+		// Save workspace
+		this.saveWorkspace = new JMenuItem("Save workspace");
+		this.saveWorkspace.setIcon(new ImageIcon(Constants.SAVE_WORKSPACE));
+		this.saveWorkspace.setMnemonic(KeyEvent.VK_S);
+		this.saveWorkspace.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+		
+		// Edit
+		this.edit = new JMenuItem("Edit");
+		this.edit.setEnabled(false);
+		this.edit.setIcon(new ImageIcon(Constants.EDIT_ICON));
+		this.edit.setMnemonic(KeyEvent.VK_E);
+		this.edit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
+		
+		// Load project
+		this.loadProject = new JMenuItem("Load Project");
+		this.loadProject.setIcon(new ImageIcon(Constants.LOAD_PROJECT_ICON));
+		this.loadProject.setMnemonic(KeyEvent.VK_L);
+		this.loadProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.CTRL_MASK));
+		
+		// Add from free documents
+		this.addFromFree = new JMenuItem("Add from free documents...");
+		this.addFromFree.setIcon(new ImageIcon(Constants.FROM_FREE_DOCS));
+		this.addFromFree.setMnemonic(KeyEvent.VK_F);
+		this.addFromFree.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK + ActionEvent.ALT_MASK));
+		this.addFromFree.setEnabled(model.hasFreeDocuments());
+		
+		// Save project
+		this.saveProject = new JMenuItem("Save");
+		this.saveProject.setIcon(new ImageIcon(Constants.SAVE_PROJECT));
+		this.saveProject.setMnemonic(KeyEvent.VK_S);
+		this.saveProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.ALT_MASK));
+		
+		// Validacija
+		ElementType currentSlotType = this.node instanceof Slot ? ((Slot) this.node).getType() : null;
+		
+		if (currentSlotType != null) {
+			this.addTextElement.setEnabled(false);
+			this.addGraphicElement.setEnabled(false);
+			this.edit.setEnabled(true);
+		}
+		
+		// Dodeljivanje akcija
+		this.menuItems = new HashMap<Class<? extends Object>, List<JMenuItem>>();
+
+		menuItems.put(Workspace.class, Arrays.asList(add, saveWorkspace, switchWorkspace, loadProject));
+		menuItems.put(Project.class, node.getClass() == Project.class && ((Project) node).isOpened()
+						? Arrays.asList(add, rename, delete, addFromFree, openOrClose, saveProject)
+						: Arrays.asList(delete, openOrClose));
+		menuItems.put(Document.class, Arrays.asList(add, rename, delete, shareDocument));
+		menuItems.put(DocumentLink.class, Arrays.asList(delete));
+		menuItems.put(Page.class, Arrays.asList(add, rename, delete));
+		menuItems.put(Slot.class, Arrays.asList(addElement, edit, rename, delete));
+		menuItems.put(Element.class, Arrays.asList(rename, delete));
+
+		if (this.menuItems.containsKey(node.getClass())) {
+			for (JMenuItem item : this.menuItems.get(node.getClass()))
+				this.add(item);
+		} 
+		else {
+			if (node instanceof Element) {
+				for (JMenuItem item : this.menuItems.get(Element.class)) 
+					this.add(item);
+			} 
+			else 
+				System.err.println("TreePopupMenu exception");
+		}
+	}
+	
+	public Node getSelectedNode() {
+		return this.node;
+	}
+	
+	public void setAddListener(ActionListener listener) {
+		this.add.addActionListener(listener);
+	}
+	
+	public void setDeleteListener(ActionListener listener) {
+		this.delete.addActionListener(listener);
+	}
+	
+	public void setRenameListener(ActionListener listener) {
+		this.rename.addActionListener(listener);
+	}
+
+	public void setOpenOrCloseProjectListener(ActionListener listener) {
+		this.openOrClose.addActionListener(listener);
+	}
+	
+	public void setShareDocumentListener(ActionListener listener) {
+		this.shareDocument.addActionListener(listener);
+	}
+	
+	public void setSaveProjectListener(ActionListener listener) {
+		this.saveProject.addActionListener(listener);
+	}
+	public void setAddFromFreeListener(ActionListener listener) {
+		this.addFromFree.addActionListener(listener);
+	}
+	
+	public void setElementEditListener(ActionListener listener) {
+		this.edit.addActionListener(listener);
+	}
+	
+	public void setTextElementListener(ActionListener listener) {
+		this.addTextElement.addActionListener(listener);
+	}
+
+	public void setAddGraphicElementListener(ActionListener listener) {
+		this.addGraphicElement.addActionListener(listener);
+	}
+	
+	public void setSwitchWorkspaceListener(ActionListener listener) {
+		this.switchWorkspace.addActionListener(listener);
+	}
+	
+	public void setLoadProjectListener(ActionListener listener) {
+		this.loadProject.addActionListener(listener);
+	}
+	
+	public void setSaveWorkspaceListener(ActionListener listener) {
+		this.saveWorkspace.addActionListener(listener);
+	}
+
+	public boolean getEdit() {
+		return edit.isEnabled();
+	}
+
+	public void setEdit(boolean isEditable) {
+		this.edit.setEnabled(isEditable);
+	}
+}

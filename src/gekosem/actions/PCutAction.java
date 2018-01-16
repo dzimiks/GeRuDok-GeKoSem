@@ -1,0 +1,46 @@
+package gekosem.actions;
+
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+
+import javax.swing.AbstractAction;
+
+import gekosem.Gekosem;
+import gekosem.select.SlotELemenetsSelection;
+import gui.commands.DeleteElementCommand;
+import gui.commands.Invoker;
+import gui.model.Element;
+import gui.model.Slot;
+
+public class PCutAction extends AbstractAction{
+	
+	Slot slot;
+	Gekosem g;
+	
+	public PCutAction(Gekosem g, Slot slot) {
+		this.g = g;
+		this.slot = slot;
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		//g.getGekosemClipboard().setElements(slot.getSelectionModels().getSelectionList());
+		//ArrayList<Element>elements = slot.getSelectionModels().getSelectionList();
+		//g.getGekosemClipboard().setElements(null);
+		//ArrayList<Element> elementi = slot.getSelectionModels().getSelectionList();
+		//for(int i = 0 ; i < elementi.size() ; i++){
+			//g.getGekosemClipboard().addElement(elementi.get(i));
+		//}
+		g.getGekosemClipboard().setElements(null);
+		ArrayList<Element> elementi = slot.getSelectionModels().getSelectionList();
+		ArrayList<Element> newList = new ArrayList<>();
+		for(int i = 0 ; i < elementi.size() ; i++){
+			newList.add(elementi.get(i));
+			//g.getGekosemClipboard().addElement(elementi.get(i));
+		}
+		//g.getGekosemClipboard().setElements(slot.getSelectionModels().getSelectionList());
+		g.getGekosemClipboard().setElements(newList);
+		Invoker.getInstance().executeCommand(new DeleteElementCommand(elementi));
+	}
+
+}

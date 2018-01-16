@@ -1,0 +1,78 @@
+package gekosem;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Paint;
+import java.awt.Stroke;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.io.Serializable;
+
+import gekosem.painter.AndPainter;
+import gekosem.painter.NotPainter;
+
+@SuppressWarnings("serial")
+public class NotElement extends GraphicShape implements Serializable {
+
+	public NotElement(Point2D pos, Dimension size, Stroke stroke, Paint paint,Color strokeColor) {
+		super(pos, size, stroke, paint, strokeColor, 1, 1);
+		// TODO Auto-generated constructor stub
+		setPainter(new NotPainter(this));
+	}
+
+	public NotElement(NotElement not){
+		super(not);
+		setName("klon");
+		setPainter(new NotPainter(this));
+	}
+	
+	public static GraphicShape defaultPaint(Point2D pos, int elemNo, Paint color){
+		Point2D position = (Point2D) pos.clone();
+
+		NotElement not = new NotElement(position, new Dimension(50, 50), 
+				new BasicStroke(2, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL), color, Color.BLACK);
+		
+		not.setName("NOT " + elemNo);
+		
+		return not;
+	}
+	
+	@Override
+	public GraphicShape clone() {
+		// TODO Auto-generated method stub
+		return new NotElement(this);
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return this.getName();
+	}
+	@Override
+	public void setPosition(Point2D position) {
+		super.setPosition(position);
+		setPainter(new NotPainter(this));
+	}
+
+	@Override
+	public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DataFlavor[] getTransferDataFlavors() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isDataFlavorSupported(DataFlavor flavor) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+}

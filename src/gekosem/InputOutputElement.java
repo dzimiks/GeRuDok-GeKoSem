@@ -1,0 +1,122 @@
+package gekosem;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Paint;
+import java.awt.Stroke;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.io.Serializable;
+
+import gekosem.painter.ElementPainter;
+import gekosem.painter.InputOutputPainter;
+
+@SuppressWarnings("serial")
+public class InputOutputElement extends GraphicElement implements Serializable {
+
+	private Point2D position;
+	private GraphicShape graphicShape;
+
+	private int number;
+	private int type;
+
+	public InputOutputElement(Point2D pos, Dimension size, Stroke stroke, Paint paint, Color strokeColor, int number,
+			int type, GraphicShape gs) {
+		super(stroke, paint, strokeColor);
+		this.graphicShape = gs;
+		this.number = number;
+		this.type = type;
+		this.position = pos;
+		this.painter = new InputOutputPainter(this);
+		// TODO Auto-generated constructor stub
+	}
+
+	public InputOutputElement(InputOutputElement element, GraphicShape gs) {
+		super(element);
+
+		this.graphicShape = gs;
+		this.number = element.getNumber();
+		this.type = element.getType();
+		this.position = element.getPosition();
+		this.painter = new InputOutputPainter(this);
+	}
+
+	public static InputOutputElement defaultPaint(Point2D pos, Stroke stroke, Paint paint, GraphicShape gs, int ioNo,
+			int type) {
+		Point2D position = (Point2D) pos.clone();
+		position.setLocation(position.getX(), position.getY());
+		InputOutputElement io = new InputOutputElement(pos, new Dimension(40, 25), stroke, paint, Color.BLUE, ioNo,
+				type, gs);
+
+		io.setName("IO" + ioNo);
+		return io;
+	}
+
+	@Override
+	public GraphicElement clone() {
+		// TODO Auto-generated method stub
+		return new InputOutputElement(this, graphicShape);
+	}
+
+	public Point2D getPosition() {
+		return position;
+	}
+
+	public void setPosition(Point2D position) {
+		this.position = position;
+		this.painter = new InputOutputPainter(this);
+		
+	}
+
+	public GraphicShape getGraphicShape() {
+		return graphicShape;
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return this.getName();
+	}
+
+	public void setGraphicShape(GraphicShape graphicShape) {
+		this.graphicShape = graphicShape;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public void setNumber(int number) {
+		this.number = number;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
+
+	@Override
+	public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DataFlavor[] getTransferDataFlavors() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isDataFlavorSupported(DataFlavor flavor) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+}
