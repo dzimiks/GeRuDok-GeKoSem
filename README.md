@@ -7,4 +7,4 @@ Projects in GeRuDok are organized in workspace and can be seen in a tree view, e
 Textual editor was primarily demonstrational so it does not have many functionalities.
 On the other hand, graphical editor is much more complex. The idea was to simulate some sort of enviroment that can be used to plan and design sequential networks.
 
-
+![](https://i.imgur.com/vDiGmra.png)
